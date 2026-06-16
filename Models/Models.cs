@@ -1,3 +1,5 @@
+using ZKTecoGateway.Services;
+
 namespace ZKTecoGateway.Models
 {
     // -------------------------------------------------------------------------
@@ -42,7 +44,6 @@ namespace ZKTecoGateway.Models
 
     // -------------------------------------------------------------------------
     // The payload we POST to the client's application
-    // (mirrors the HistoryViewModel you were already using)
     // -------------------------------------------------------------------------
 
     public class HistoryViewModel
@@ -111,6 +112,29 @@ namespace ZKTecoGateway.Models
         public bool Success { get; set; }
         public string Message { get; set; } = "";
     }
- 
+    public class DeviceSummary
+    {
+        public string SerialNumber { get; set; } = "";
+        public string ClientId { get; set; } = "";
+        public string ClientName { get; set; } = "";
+        public List<string> ForwardUrls { get; set; } = new();
+        public bool IsOnline { get; set; }
+        public DateTime? LastSeen { get; set; }
+        public bool AutoPull { get; set; }
+        public bool PullPending { get; set; }
+        public long LastStamp { get; set; }
+        public List<PullEvent> RecentPulls { get; set; } = new();
+    }
+
+    public class AttendanceArchiveEntry
+    {
+        public DateTime Time { get; set; }
+
+        public string SerialNumber { get; set; } = "";
+
+        public string ClientId { get; set; } = "";
+
+        public AttendanceRecord Record { get; set; } = new();
+    }
 
 }

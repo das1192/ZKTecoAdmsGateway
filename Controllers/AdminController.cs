@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using ZKTecoGateway.Config;
 using ZKTecoGateway.Models;
 using ZKTecoGateway.Services;
@@ -13,17 +14,31 @@ namespace ZKTecoGateway.Controllers
         private readonly ForwardingService _forwarder;
         private readonly DeviceStateService _state;
         private readonly GatewayConfig _config;
-
+        private readonly IWebHostEnvironment _env;
         public AdminController(
             DeviceRegistryService registry,
             ForwardingService forwarder,
             DeviceStateService state,
-            GatewayConfig config)
+            GatewayConfig config,
+            IWebHostEnvironment env)
         {
             _registry = registry;
             _forwarder = forwarder;
             _state = state;
             _config = config;
+            _env = env;
+        }
+
+
+        [HttpGet("health")]
+        public IActionResult Health()
+        {
+            return Ok(new
+            {
+                status = "Healthy",
+                time = DateTime.UtcNow,
+                version = "1.0.0"
+            });
         }
 
         // ── Status ───────────────────────────────────────────────────────────
@@ -98,11 +113,7 @@ namespace ZKTecoGateway.Controllers
             });
         }
 
-        [HttpGet("hello")]
-        public IActionResult Hello()
-        {
-            return Ok("hello");
-        }
+
 
         // ── Pull History for one device ───────────────────────────────────────
 
@@ -145,19 +156,33 @@ namespace ZKTecoGateway.Controllers
 
             return result;
         }
-    }
 
-    public class DeviceSummary
-    {
-        public string SerialNumber { get; set; } = "";
-        public string ClientId { get; set; } = "";
-        public string ClientName { get; set; } = "";
-        public List<string> ForwardUrls { get; set; } = new();
-        public bool IsOnline { get; set; }
-        public DateTime? LastSeen { get; set; }
-        public bool AutoPull { get; set; }
-        public bool PullPending { get; set; }
-        public long LastStamp { get; set; }
-        public List<PullEvent> RecentPulls { get; set; } = new();
+        [HttpGet("attendance-log/{date}")]
+        public async Task<IActionResult> AttendanceLog(string date)
+        {
+            var file = Path.Combine(
+                AppContext.BaseDirectory,
+                "data",
+                $"attendance-{date}.jsonl");
+
+            if (!System.IO.File.Exists(file))
+                return Ok(new List<AttendanceArchiveEntry>());
+
+            var result = new List<AttendanceArchiveEntry>();
+
+            foreach (var line in await System.IO.File.ReadAllLinesAsync(file))
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                var entry =
+                    JsonSerializer.Deserialize<AttendanceArchiveEntry>(line);
+
+                if (entry != null)
+                    result.Add(entry);
+            }
+
+            return Ok(result);
+        }
     }
-}
+ }

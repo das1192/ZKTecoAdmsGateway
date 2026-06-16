@@ -14,6 +14,9 @@ builder.Services.AddSingleton<DeviceRegistryService>();
 builder.Services.AddSingleton<ForwardingService>();
 builder.Services.AddSingleton<DeviceStateService>();
 builder.Services.AddSingleton<AttendanceArchiveService>();
+builder.Services.AddHostedService<ScheduledPullService>();
+builder.Services.Configure<ScheduledPullConfig>(
+builder.Configuration.GetSection("ScheduledPull"));
 builder.Services.AddHttpClient("ForwardClient", client =>
 {
     client.Timeout = TimeSpan.FromSeconds(60);
