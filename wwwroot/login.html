@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+        <html>
+        <head>
+          <title>ZKTeco Gateway</title>
+          <meta charset="utf-8">
+          <style>
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            body { font-family: 'Segoe UI', sans-serif; background: #0b0f1a;
+                   display: grid; place-items: center; min-height: 100vh; }
+            .card { background: #111827; border: 1px solid #1e2d45; border-radius: 16px;
+                    padding: 40px; width: 360px; }
+            .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
+            .logo-icon { width: 40px; height: 40px; background: #3b82f6; border-radius: 10px;
+                         display: grid; place-items: center; }
+            h1 { color: #e2e8f0; font-size: 18px; font-weight: 600; }
+            p  { color: #64748b; font-size: 13px; margin-top: 2px; }
+            label { display: block; font-size: 12px; color: #64748b;
+                    text-transform: uppercase; letter-spacing: .06em;
+                    margin-bottom: 8px; margin-top: 24px; }
+            input {
+              width: 100%; padding: 10px 14px; border-radius: 8px;
+              background: #0b0f1a; border: 1px solid #1e2d45;
+              color: #e2e8f0; font-size: 14px; outline: none;
+              transition: border-color .2s;
+            }
+            input:focus { border-color: #3b82f6; }
+            button {
+              width: 100%; margin-top: 20px; padding: 11px;
+              background: #3b82f6; color: white; border: none;
+              border-radius: 8px; font-size: 14px; font-weight: 600;
+              cursor: pointer; transition: background .15s;
+            }
+            button:hover { background: #2563eb; }
+            .error { color: #ef4444; font-size: 13px; margin-top: 12px;
+                     display: none; text-align: center; }
+            .error.show { display: block; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <div class="logo">
+              <div class="logo-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                     stroke="white" stroke-width="2.5">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                  <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <div>
+                <h1>ZKTeco Gateway</h1>
+                <p>Attendance Management</p>
+              </div>
+            </div>
+
+            <label>Admin Key</label>
+            <input type="password" id="key" placeholder="Enter your admin key"
+                   onkeydown="if(event.key==='Enter') login()">
+            <button onclick="login()">Sign In →</button>
+            <div class="error" id="err">Incorrect admin key. Try again.</div>
+          </div>
+
+          <script>
+            // Check if there's an error param in URL
+            if (location.search.includes('error=1')) {
+              document.getElementById('err').classList.add('show');
+            }
+
+            function login() {
+              const key = document.getElementById('key').value.trim();
+              if (!key) return;
+              // Store in sessionStorage for dashboard API calls
+              sessionStorage.setItem('ak', key);
+              window.location.href = '/?key=' + encodeURIComponent(key);
+            }
+          </script>
+        </body>
+    </html>
+ 
